@@ -30,6 +30,7 @@ Push в `main` → GitHub Actions. **Repository secrets** / **variables** (не 
 | Variable | Значение |
 |----------|----------|
 | `DOMAIN` | домен, напр. `time.example.com` |
+| `SSH_PORT` | SSH-порт VPS (необяз., по умолчанию `22`) |
 
 VPS: Traefik `/opt/proxy`, app `/opt/<APP_DIR>`. Фронт: `wss://<DOMAIN>`
 

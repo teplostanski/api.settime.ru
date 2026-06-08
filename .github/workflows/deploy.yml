@@ -48,6 +48,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ vars.SSH_PORT != '' && vars.SSH_PORT || 22 }}
           envs: DOMAIN,IMAGE,GITHUB_TOKEN,GITHUB_ACTOR,REPOSITORY
           script: |
             set -euo pipefail

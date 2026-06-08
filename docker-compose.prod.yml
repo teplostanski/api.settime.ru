@@ -7,14 +7,14 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=proxy
-      - traefik.http.routers.settime-http.rule=Host(`${DOMAIN:?set DOMAIN in .env}`)
-      - traefik.http.routers.settime-http.entrypoints=web
-      - traefik.http.routers.settime-http.middlewares=redirect-https
-      - traefik.http.routers.settime.rule=Host(`${DOMAIN}`)
-      - traefik.http.routers.settime.entrypoints=websecure
-      - traefik.http.routers.settime.tls=true
-      - traefik.http.routers.settime.tls.certresolver=letsencrypt
-      - traefik.http.services.settime.loadbalancer.server.port=8080
+      - traefik.http.routers.api-settime-http.rule=Host(`${DOMAIN:?set DOMAIN in .env}`)
+      - traefik.http.routers.api-settime-http.entrypoints=web
+      - traefik.http.routers.api-settime-http.middlewares=redirect-https
+      - traefik.http.routers.api-settime.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.api-settime.entrypoints=websecure
+      - traefik.http.routers.api-settime.tls=true
+      - traefik.http.routers.api-settime.tls.certresolver=letsencrypt
+      - traefik.http.services.api-settime.loadbalancer.server.port=8080
 
 networks:
   proxy:
