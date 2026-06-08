@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build",
+    "docker:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build"
+  },
+  "dependencies": {
+    "@hapi/sntp": "^4.0.0",
+    "ws": "^8.21.0"
+  }
+}

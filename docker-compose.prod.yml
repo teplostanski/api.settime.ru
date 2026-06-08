@@ -1,0 +1,21 @@
+services:
+  time-server:
+    image: ${IMAGE:?set IMAGE in .env}
+    pull_policy: always
+    networks:
+      - proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=proxy
+      - traefik.http.routers.settime-http.rule=Host(`${DOMAIN:?set DOMAIN in .env}`)
+      - traefik.http.routers.settime-http.entrypoints=web
+      - traefik.http.routers.settime-http.middlewares=redirect-https
+      - traefik.http.routers.settime.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.settime.entrypoints=websecure
+      - traefik.http.routers.settime.tls=true
+      - traefik.http.routers.settime.tls.certresolver=letsencrypt
+      - traefik.http.services.settime.loadbalancer.server.port=8080
+
+networks:
+  proxy:
+    external: true
