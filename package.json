@@ -5,13 +5,20 @@
     "node": ">=20"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
     "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build",
     "docker:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build"
   },
   "dependencies": {
     "@hapi/sntp": "^4.0.0",
     "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
   }
 }

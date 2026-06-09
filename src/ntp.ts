@@ -1,12 +1,30 @@
 import Sntp from '@hapi/sntp';
 import { config } from './config.js';
 
-const wait = (ms) =>
+type NtpStatus = {
+  offsetMs: number;
+  lastSyncedAt: number | null;
+  lastHost: string | null;
+  synced: boolean;
+};
+
+type NtpSync = {
+  getAccurateTimeMs: () => number;
+  getStatus: () => NtpStatus;
+  start: () => Promise<void>;
+  stop: () => void;
+  sync: () => Promise<void>;
+};
+
+const wait = (ms: number): Promise<void> =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 
-const requestOffset = async (host) => {
+const getErrorMessage = (err: unknown): string =>
+  err instanceof Error ? err.message : 'unknown error';
+
+const requestOffset = async (host: string): Promise<number> => {
   const res = await Sntp.time({
     host,
     port: config.ntp.port,
@@ -16,14 +34,14 @@ const requestOffset = async (host) => {
   return res.t;
 };
 
-const createNtpSync = () => {
+const createNtpSync = (): NtpSync => {
   let offsetMs = 0;
-  let lastSyncedAt = null;
-  let lastHost = null;
-  let timerId = null;
+  let lastSyncedAt: number | null = null;
+  let lastHost: string | null = null;
+  let timerId: ReturnType<typeof setInterval> | null = null;
 
-  const syncOnce = async () => {
-    let lastError = null;
+  const syncOnce = async (): Promise<boolean> => {
+    let lastError: unknown = null;
 
     for (const host of config.ntp.hosts) {
       try {
@@ -37,23 +55,20 @@ const createNtpSync = () => {
         return true;
       } catch (err) {
         lastError = err;
-        console.warn(`[ntp] ${host}: ${err.message}`);
+        console.warn(`[ntp] ${host}: ${getErrorMessage(err)}`);
       }
     }
 
-    console.error(
-      '[ntp] все серверы недоступны:',
-      lastError?.message ?? 'unknown error',
-    );
+    console.error('[ntp] все серверы недоступны:', getErrorMessage(lastError));
 
     return false;
   };
 
-  const sync = async () => {
+  const sync = async (): Promise<void> => {
     await syncOnce();
   };
 
-  const start = async () => {
+  const start = async (): Promise<void> => {
     for (let attempt = 1; attempt <= config.ntp.startupAttempts; attempt += 1) {
       const synced = await syncOnce();
 
@@ -69,16 +84,16 @@ const createNtpSync = () => {
     timerId = setInterval(sync, config.ntp.syncIntervalMs);
   };
 
-  const stop = () => {
+  const stop = (): void => {
     if (timerId !== null) {
       clearInterval(timerId);
       timerId = null;
     }
   };
 
-  const getAccurateTimeMs = () => Date.now() + offsetMs;
+  const getAccurateTimeMs = (): number => Date.now() + offsetMs;
 
-  const getStatus = () => ({
+  const getStatus = (): NtpStatus => ({
     offsetMs,
     lastSyncedAt,
     lastHost,
@@ -95,3 +110,4 @@ const createNtpSync = () => {
 };
 
 export { createNtpSync };
+export type { NtpSync, NtpStatus };

@@ -11,7 +11,7 @@ const server = createServer((_req, res) => {
 
 attachWebSocketServer(server, ntp);
 
-const start = async () => {
+const start = async (): Promise<void> => {
   await ntp.start();
 
   server.listen(config.port, () => {
@@ -19,7 +19,7 @@ const start = async () => {
   });
 };
 
-const shutdown = (signal) => {
+const shutdown = (signal: NodeJS.Signals): void => {
   console.log(`[server] ${signal}, останавливаемся...`);
 
   ntp.stop();
@@ -32,7 +32,7 @@ const shutdown = (signal) => {
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 process.on('SIGINT', () => shutdown('SIGINT'));
 
-start().catch((err) => {
+start().catch((err: unknown) => {
   console.error('[server] не удалось запуститься:', err);
   process.exit(1);
 });

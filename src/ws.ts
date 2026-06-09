@@ -1,9 +1,11 @@
-import { WebSocketServer } from 'ws';
+import type { Server } from 'node:http';
+import { WebSocketServer, type WebSocket } from 'ws';
+import type { NtpSync } from './ntp.js';
 
-const attachWebSocketServer = (httpServer, ntp) => {
+const attachWebSocketServer = (httpServer: Server, ntp: NtpSync): WebSocketServer => {
   const wss = new WebSocketServer({ server: httpServer });
 
-  const sendTime = (ws) => {
+  const sendTime = (ws: WebSocket): void => {
     ws.send(
       JSON.stringify({
         type: 'unix_timestamp',

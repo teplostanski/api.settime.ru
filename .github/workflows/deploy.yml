@@ -77,11 +77,6 @@ jobs:
             cat > .env <<EOF
             DOMAIN=${DOMAIN}
             IMAGE=${IMAGE}
-            NTP_HOST=pool.ntp.org,time.google.com,time.cloudflare.com
-            NTP_PORT=123
-            NTP_TIMEOUT_MS=5000
-            NTP_SYNC_INTERVAL_MS=3600000
-            NTP_STARTUP_ATTEMPTS=3
             EOF
 
             echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
