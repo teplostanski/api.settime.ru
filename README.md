@@ -2,6 +2,15 @@
 
 WebSocket-сервер точного времени (NTP).
 
+- Приложение: [settime.ru](https://settime.ru)
+- WebSocket: [api.settime.ru](wss://settime.ru)
+
+## В терминале
+
+```bash
+websocat wss://api.settime.ru
+```
+
 ## Локально
 
 ```bash
