@@ -3,7 +3,7 @@
 WebSocket-сервер точного времени (NTP).
 
 - Приложение: [settime.ru](https://settime.ru)
-- WebSocket: [api.settime.ru](wss://settime.ru)
+- WebSocket: [api.settime.ru](wss://api.settime.ru)
 
 ## В терминале
 

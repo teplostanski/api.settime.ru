@@ -1,15 +1,15 @@
 import type { Server } from 'node:http';
+import Sntp from 'nano-sntp';
 import { WebSocketServer, type WebSocket } from 'ws';
-import type { NtpSync } from './ntp.js';
 
-const attachWebSocketServer = (httpServer: Server, ntp: NtpSync): WebSocketServer => {
+const attachWebSocketServer = (httpServer: Server): WebSocketServer => {
   const wss = new WebSocketServer({ server: httpServer });
 
   const sendTime = (ws: WebSocket): void => {
     ws.send(
       JSON.stringify({
         type: 'unix_timestamp',
-        value: ntp.getAccurateTimeMs(),
+        value: Sntp.now(),
       }),
     );
   };

@@ -1,18 +1,32 @@
 import { createServer } from 'node:http';
+import Sntp from 'nano-sntp';
 import { config } from './config.js';
-import { createNtpSync } from './ntp.js';
 import { attachWebSocketServer } from './ws.js';
 
-const ntp = createNtpSync();
 const server = createServer((_req, res) => {
   res.statusCode = 404;
   res.end();
 });
 
-attachWebSocketServer(server, ntp);
+attachWebSocketServer(server);
 
 const start = async (): Promise<void> => {
-  await ntp.start();
+  await Sntp.start({
+    hosts: config.ntp.hosts,
+    port: config.ntp.port,
+    timeout: config.ntp.timeout,
+    clockSyncRefresh: config.ntp.syncIntervalMs,
+    startupAttempts: config.ntp.startupAttempts,
+    onError: (err) => {
+      const message = err instanceof Error ? err.message : 'unknown error';
+      console.warn(`[ntp] ${message}`);
+    },
+    onSync: (result) => {
+      console.log(
+        `[ntp] синхронизирован через ${result.host}, смещение ${result.offsetMs} мс`,
+      );
+    },
+  });
 
   server.listen(config.port, () => {
     console.log(`[server] ws://0.0.0.0:${config.port}`);
@@ -22,7 +36,7 @@ const start = async (): Promise<void> => {
 const shutdown = (signal: NodeJS.Signals): void => {
   console.log(`[server] ${signal}, останавливаемся...`);
 
-  ntp.stop();
+  Sntp.stop();
 
   server.close(() => {
     process.exit(0);
