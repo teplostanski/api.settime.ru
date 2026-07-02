@@ -1,5 +1,0 @@
-services:
-  time-server:
-    build: .
-    ports:
-      - "${PORT:-8080}:8080"
