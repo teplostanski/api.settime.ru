@@ -41,4 +41,4 @@ jobs:
         with:
           dokploy_url: https://deploy.teplostanski.me
           api_key: ${{ secrets.DOKPLOY_API_KEY }}
-          application_id: 'Ao77eCDBR94-ZAzZqoO1S'
+          application_id: 'WiwYXFBOJADu6lvsmwUMD'
