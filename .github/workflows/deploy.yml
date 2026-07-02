@@ -36,51 +36,9 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.2.0
-        env:
-          DOMAIN: ${{ vars.DOMAIN }}
-          IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          REPOSITORY: ${{ github.repository }}
+      - name: Trigger Dokploy Deployment
+        uses: qbix-tech/dokploy-deploy-action@v1
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.SSH_PORT != '' && vars.SSH_PORT || 22 }}
-          envs: DOMAIN,IMAGE,GITHUB_TOKEN,GITHUB_ACTOR,REPOSITORY
-          script: |
-            set -euo pipefail
-
-            DEPLOY_DIR=/opt/api.settime.ru
-
-            if [ -z "${DOMAIN}" ]; then
-              echo "DOMAIN is not set in GitHub → Settings → Secrets and variables → Actions → Variables"
-              exit 1
-            fi
-
-            if [ ! -d "${DEPLOY_DIR}" ]; then
-              echo "Create ${DEPLOY_DIR} on the VPS first:"
-              echo "  sudo mkdir -p ${DEPLOY_DIR} && sudo chown ${USER}:${USER} ${DEPLOY_DIR}"
-              exit 1
-            fi
-
-            if [ ! -d "${DEPLOY_DIR}/.git" ]; then
-              git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPOSITORY}.git" "${DEPLOY_DIR}"
-            fi
-
-            cd "${DEPLOY_DIR}"
-            git fetch origin main
-            git reset --hard origin/main
-
-            cat > .env <<EOF
-            DOMAIN=${DOMAIN}
-            IMAGE=${IMAGE}
-            EOF
-
-            echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
-
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-            docker image prune -f
+          dokploy_url: https://deploy.teplostanski.me
+          api_key: ${{ secrets.DOKPLOY_API_KEY }}
+          application_id: 'Ao77eCDBR94-ZAzZqoO1S'
