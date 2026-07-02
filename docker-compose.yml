@@ -1,8 +1,0 @@
-services:
-  time-server:
-    build: .
-    container_name: api.settime.ru
-    restart: unless-stopped
-    env_file:
-      - path: .env
-        required: false
