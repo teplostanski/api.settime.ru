@@ -18,6 +18,19 @@ const attachWebSocketServer = (httpServer: Server): WebSocketServer => {
     console.log('[ws] клиент подключился');
     sendTime(ws);
 
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString())
+        
+        if (data.action === 'sync') {
+          console.log('[ws] клиент запросил данные')
+          sendTime(ws);
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })
+
     ws.on('close', () => {
       console.log('[ws] клиент отключился');
     });
