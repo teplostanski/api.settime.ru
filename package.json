@@ -7,11 +7,10 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts",
-    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build",
-    "docker:prod": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build"
+    "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "nano-sntp": "^1.0.0",
     "ws": "^8.21.0"
   },

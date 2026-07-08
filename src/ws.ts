@@ -20,16 +20,16 @@ const attachWebSocketServer = (httpServer: Server): WebSocketServer => {
 
     ws.on('message', (message) => {
       try {
-        const data = JSON.parse(message.toString())
-        
-        if (data.action === 'sync') {
-          console.log('[ws] клиент запросил данные')
+        const data = JSON.parse(message.toString());
+
+        if (data.type === 'refresh') {
+          console.log('[ws] клиент запросил обновление');
           sendTime(ws);
         }
       } catch (error) {
-        console.error(error)
+        console.error(`[ws] ошибка: ${error}`);
       }
-    })
+    });
 
     ws.on('close', () => {
       console.log('[ws] клиент отключился');

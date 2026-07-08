@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const Defaults = {
   Port: 8080,
   NtpHost:
