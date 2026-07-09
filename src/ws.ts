@@ -1,15 +1,16 @@
 import type { Server } from 'node:http';
-import Sntp from 'nano-sntp';
+import { now } from './ntp.js';
 import { WebSocketServer, type WebSocket } from 'ws';
+import { Paths } from './constants.js';
 
 const attachWebSocketServer = (httpServer: Server): WebSocketServer => {
-  const wss = new WebSocketServer({ server: httpServer });
+  const wss = new WebSocketServer({ server: httpServer, path: Paths.WebSocket });
 
   const sendTime = (ws: WebSocket): void => {
     ws.send(
       JSON.stringify({
         type: 'unix_timestamp',
-        value: Sntp.now(),
+        value: now(),
       }),
     );
   };

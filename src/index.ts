@@ -1,32 +1,24 @@
 import { createServer } from 'node:http';
-import Sntp from 'nano-sntp';
+import express from 'express';
 import { config } from './config.js';
+import { startNtp, stopNtp } from './ntp.js';
+import { registerRoutes } from './routes.js';
 import { attachWebSocketServer } from './ws.js';
 
-const server = createServer((_req, res) => {
-  res.statusCode = 404;
-  res.end();
+const app = express();
+
+registerRoutes(app);
+
+app.use((_req, res) => {
+  res.status(404).json({ error: 'Not Found' });
 });
+
+const server = createServer(app);
 
 attachWebSocketServer(server);
 
 const start = async (): Promise<void> => {
-  await Sntp.start({
-    hosts: config.ntp.hosts,
-    port: config.ntp.port,
-    timeout: config.ntp.timeout,
-    clockSyncRefresh: config.ntp.syncIntervalMs,
-    startupAttempts: config.ntp.startupAttempts,
-    onError: (err) => {
-      const message = err instanceof Error ? err.message : 'unknown error';
-      console.warn(`[ntp] ${message}`);
-    },
-    onSync: (result) => {
-      console.log(
-        `[ntp] синхронизирован через ${result.host}, смещение ${result.offsetMs} мс`,
-      );
-    },
-  });
+  await startNtp(config.ntp);
 
   server.listen(config.port, () => {
     console.log(`[server] ws://0.0.0.0:${config.port}`);
@@ -36,7 +28,7 @@ const start = async (): Promise<void> => {
 const shutdown = (signal: NodeJS.Signals): void => {
   console.log(`[server] ${signal}, останавливаемся...`);
 
-  Sntp.stop();
+  stopNtp();
 
   server.close(() => {
     process.exit(0);
